@@ -1,0 +1,108 @@
+:root {
+  --navy: #4d1717;
+  --teal: #6e1212;
+  --bg: #faf4f4;
+  --ink: #462020;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.sidebar {
+  background: var(--navy);
+  min-height: 100vh;
+  color: #fff;
+}
+
+.brand {
+  font-weight: 750;
+  font-size: 1.2rem;
+}
+
+.sidebar a {
+  color: #f2dcdc;
+  text-decoration: none;
+  display: block;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.55rem;
+  margin: 0.2rem 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: #692a2a;
+  color: white;
+}
+
+.main {
+  padding: 2rem;
+}
+
+.stat {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 5px 20px #4d181812;
+}
+
+.stat .num {
+  font-size: 2rem;
+  font-weight: 750;
+  color: var(--navy);
+}
+
+.stat .label {
+  color: #8a6464;
+  font-size: 0.88rem;
+}
+
+.panel {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 5px 20px #4d18180d;
+}
+
+.btn-primary {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.btn-primary:hover {
+  background: #690606;
+  border-color: #690606;
+}
+
+.badge-status {
+  font-weight: 600;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.8rem 0.75rem;
+  vertical-align: middle;
+}
+
+.search {
+  max-width: 420px;
+}
+
+@media (max-width: 767px) {
+  .sidebar {
+    min-height: auto;
+    padding: 0.6rem !important;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .sidebar a {
+    padding: 0.45rem 0.6rem;
+  }
+
+  .main {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block heading %}Good day, {{ user.name.split(' ')[0] }}{% endblock %}
+{% block subheading %}Here's what's happening across your library.{% endblock %}
+
+{% block content %}
+
+<div class="row g-3 mb-4">
+    {% for label, val in [('Titles', cards.titles), ('Physical copies', cards.copies), ('Issued books', cards.issued), ('Active students', cards.members), ('Overdue books', cards.overdue)] %}
+    <div class="col-6 col-xl">
+        <div class="card stat h-100">
+            <div class="card-body">
+                <div class="label">{{ label }}</div>
+                <div class="num">{{ val }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card panel">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Recent transactions</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Book title</th>
+                                <th>Student</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for l in recent %}
+                            <tr>
+                                <td>
+                                    {{ l.copy.title.title }}
+                                    <div class="small text-secondary">{{ l.copy.barcode }}</div>
+                                </td>
+                                <td>{{ l.member.user.name }}</td>
+                                <td>
+                                    <span class="badge {{ 'text-bg-success' if l.status == 'active' else 'text-bg-secondary' }}">
+                                        {{ 'Issued' if l.status == 'active' else 'Returned' }}
+                                    </span>
+                                </td>
+                                <td>{{ l.return_date or l.issue_date }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-secondary py-4">No circulation activity yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card panel">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Most borrowed</h2>
+
+                {% for title, n in top %}
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>{{ title }}</span>
+                    <span class="badge text-bg-light">{{ n }}</span>
+                </div>
+                {% else %}
+                <p class="text-secondary">Borrowing activity will appear here.</p>
+                {% endfor %}
+
+                <a class="btn btn-outline-primary btn-sm mt-3" href="/reports">View reports</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Issue & return{% endblock %}
+{% block heading %}Issue & return{% endblock %}
+{% block subheading %}Scan a copy barcode to issue it, or process an active loan below.{% endblock %}
+
+{% block content %}
+
+{% if error %}
+    <div class="alert alert-warning">{{ error.replace('+', ' ') }}</div>
+{% endif %}
+
+<div class="card panel mb-4">
+    <div class="card-body">
+        <h2 class="h5">Issue a book</h2>
+        <form method="post" action="/circulation/issue" class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label">Member</label>
+                <select name="member_id" class="form-select" required>
+                    <option value="">Select member</option>
+                    {% for m in members %}
+                        <option value="{{ m.id }}">{{ m.member_code }} · {{ m.user.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-5">
+                <label class="form-label">Copy barcode</label>
+                <input name="barcode" class="form-control" placeholder="Scan or type barcode" required autofocus>
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100">Issue copy</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card panel">
+    <div class="card-body">
+        <h2 class="h5">Active loans</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Copy</th>
+                        <th>Member</th>
+                        <th>Due date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in loans %}
+                    <tr>
+                        <td>
+                            {{ l.copy.title.title }}
+                            <div class="small text-secondary">{{ l.copy.barcode }}</div>
+                        </td>
+
+                        <td>{{ l.member.member_code }} · {{ l.member.user.name }}</td>
+
+                        <td>{{ l.due_date }}</td>
+
+                        <td>
+                            {% if l.due_date < today %}
+                                <span class="badge text-bg-danger">Overdue</span>
+                            {% else %}
+                                <span class="badge text-bg-success">On loan</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="d-flex gap-2">
+                                <form method="post" action="/circulation/{{ l.id }}/return">
+                                    <select name="condition" class="form-select form-select-sm">
+                                        <option value="ok">Good</option>
+                                        <option value="damaged">Damaged</option>
+                                        <option value="lost">Lost</option>
+                                    </select>
+                                    <button class="btn btn-sm btn-primary">Return</button>
+                                </form>
+
+                                <form method="post" action="/circulation/{{ l.id }}/renew">
+                                    <button class="btn btn-sm btn-outline-primary">Renew</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-secondary py-4">No active loans.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

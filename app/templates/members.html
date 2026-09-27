@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block heading %}Students & members{% endblock %}
+{% block subheading %}Manage membership status and borrowing limits.{% endblock %}
+
+{% block content %}
+
+<div class="card panel mb-3">
+    <div class="card-body">
+        <form method="post" action="/members/create" class="row g-2 align-items-end">
+            <div class="col-lg-2">
+                <label class="form-label">Full name</label>
+                <input class="form-control" name="name" required>
+            </div>
+
+            <div class="col-lg-3">
+                <label class="form-label">Email</label>
+                <input class="form-control" name="email" type="email" required>
+            </div>
+
+            <div class="col-lg-2">
+                <label class="form-label">Member ID</label>
+                <input class="form-control" name="member_code" required>
+            </div>
+
+            <div class="col-lg-2">
+                <label class="form-label">Temp password</label>
+                <input class="form-control" name="password" type="password" minlength="10" required>
+            </div>
+
+            <div class="col-lg-2">
+                <label class="form-label">Borrow limit</label>
+                <input class="form-control" name="borrow_limit" type="number" value="5" min="1" max="50">
+            </div>
+
+            <div class="col-lg-1">
+                <button class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card panel">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Member ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Limit</th>
+                    <th>Status</th>
+                    <th>Active loans</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in members %}
+                <tr>
+                    <td>{{ m.member_code }}</td>
+                    <td>{{ m.user.name }}</td>
+                    <td>{{ m.user.email }}</td>
+                    <td>{{ m.borrow_limit }}</td>
+                    <td><span class="badge text-bg-success">{{ m.membership_status }}</span></td>
+                    <td>{{ loan_counts[m.id] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-4">No members registered.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

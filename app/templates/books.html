@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Books{% endblock %}
+{% block heading %}Books & copies{% endblock %}
+{% block subheading %}Find a title, check availability, and locate each copy.{% endblock %}
+
+{% block content %}
+
+{% if request.query_params.get('message') %}
+    <div class="alert alert-info">{{ request.query_params.get('message') }}</div>
+{% endif %}
+
+<div class="card panel mb-3">
+    <div class="card-body d-flex flex-wrap gap-2 justify-content-between">
+        <form class="d-flex gap-2 search">
+            <input class="form-control" name="q" value="{{ q }}" placeholder="Search title, author, ISBN">
+            <button class="btn btn-primary">Search</button>
+        </form>
+
+        {% if user.role != 'member' %}
+            <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#addTitle">＋ Add title</button>
+        {% endif %}
+    </div>
+
+    {% if user.role != 'member' %}
+        <div class="collapse" id="addTitle">
+            <form class="card-body border-top row g-2" method="post" action="/books/create">
+                <div class="col-md-4">
+                    <input class="form-control" name="title" placeholder="Title" required>
+                </div>
+                <div class="col-md-3">
+                    <input class="form-control" name="author" placeholder="Author" required>
+                </div>
+                <div class="col-md-2">
+                    <input class="form-control" name="isbn" placeholder="ISBN">
+                </div>
+                <div class="col-md-2">
+                    <input class="form-control" name="category" placeholder="Category">
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+</div>
+
+<div class="card panel">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author / ISBN</th>
+                    <th>Category</th>
+                    <th>Available</th>
+                    <th>Collection</th>
+                    <th>Copy locations</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in titles %}
+                <tr>
+                    <td class="fw-semibold">
+                        {{ t.title }}
+                        {% if user.role == 'member' %}
+                            <form method="post" action="/reservations/create" class="mt-1">
+                                <input type="hidden" name="title_id" value="{{ t.id }}">
+                                <button class="btn btn-sm btn-outline-primary">Reserve / hold</button>
+                            </form>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ t.author }}
+                        <div class="small text-secondary">{{ t.isbn or 'ISBN not recorded' }}</div>
+                    </td>
+
+                    <td>{{ t.category }}</td>
+
+                    <td>
+                        <span class="badge {{ 'text-bg-success' if counts[t.id] > 0 else 'text-bg-secondary' }}">
+                            {{ counts[t.id] }} available
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if t.is_outdated_flag %}
+                            <span class="badge text-bg-warning">Review</span>
+                        {% else %}
+                            <span class="text-success">Current</span>
+                        {% endif %}
+
+                        {% if user.role != 'member' %}
+                            <form method="post" action="/titles/{{ t.id }}/outdated" class="d-inline">
+                                <button class="btn btn-link btn-sm">{{ 'Clear' if t.is_outdated_flag else 'Flag' }}</button>
+                            </form>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% for c in copies_by_title[t.id] %}
+                            <div class="small">{{ c.barcode }} · {{ c.shelf.shelf_code if c.shelf else 'No shelf' }} · {{ c.status }}</div>
+                        {% endfor %}
+
+                        {% if user.role != 'member' %}
+                            <form class="d-flex gap-1 mt-1" method="post" action="/copies/create">
+                                <input type="hidden" name="title_id" value="{{ t.id }}">
+                                <input class="form-control form-control-sm" name="barcode" placeholder="New barcode" required>
+                                <select class="form-select form-select-sm" name="shelf_id">
+                                    <option value="">Shelf</option>
+                                    {% for s in shelves %}
+                                        <option value="{{ s.id }}">{{ s.shelf_code }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn btn-sm btn-outline-primary">Add</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-secondary">No matching titles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

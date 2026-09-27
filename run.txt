@@ -1,0 +1,19 @@
+Set-ExecutionPolicy -Scope Process Bypass
+.\scripts\setup.ps1
+.\.venv\Scripts\uvicorn.exe app.main:app --reload
+
+
+
+
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+
+
+
+
+
+
+# Activate the environment
+.\.venv\Scripts\Activate.ps1
+
+# Run uvicorn via python module flag
+python -m uvicorn app.main:app --reload

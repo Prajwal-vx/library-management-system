@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block heading %}Collection reports{% endblock %}
+{% block subheading %}Circulation pressure, overdue items, and collection health.{% endblock %}
+
+{% block content %}
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card panel p-3">
+            <h2 class="h5">Most borrowed titles</h2>
+
+            {% for t, n in most %}
+            <div class="d-flex justify-content-between border-bottom py-2">
+                {{ t }}
+                <span class="badge text-bg-light">{{ n }} loans</span>
+            </div>
+            {% else %}
+            <p class="text-secondary">No borrowing data yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card panel p-3">
+            <h2 class="h5">Overdue items ({{ overdue|length }})</h2>
+
+            {% for l in overdue %}
+            <div class="border-bottom py-2">
+                <strong>{{ l.copy.title.title }}</strong> · {{ l.member.user.name }}
+                <div class="small text-danger">
+                    Due {{ l.due_date }} · {{ (today - l.due_date).days if today is defined else 'Overdue' }}
+                </div>
+            </div>
+            {% else %}
+            <p class="text-secondary">No overdue items.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card panel p-3">
+            <h2 class="h5">Titles flagged for review ({{ low_use|length }})</h2>
+
+            {% for t in low_use %}
+            <div class="border-bottom py-2">
+                {{ t.title }} <span class="text-secondary">· {{ t.author }}</span>
+            </div>
+            {% else %}
+            <p class="text-secondary">No titles flagged for review.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card panel p-3">
+            <h2 class="h5">Loss & damage log</h2>
+
+            {% for item in losses %}
+            <div class="border-bottom py-2">
+                <span class="badge text-bg-danger">{{ item.type }}</span>
+                {{ item.copy.title.title }} · {{ item.copy.barcode }}
+                <div class="small text-secondary">
+                    {{ item.notes }} · ${{ '%.2f'|format(item.replacement_cost) }}
+                </div>
+            </div>
+            {% else %}
+            <p class="text-secondary">No overdue items.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

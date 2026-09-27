@@ -1,0 +1,3 @@
+The initial migration creates every table from the SQLAlchemy metadata. Subsequent
+schema changes should use `alembic revision --autogenerate -m "description"` and
+review the generated migration before applying it.
