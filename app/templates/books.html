@@ -1,13 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Books{% endblock %}
+{% block meta_description %}Search the WCBT Library catalogue, check book availability, and find copy locations.{% endblock %}
 {% block heading %}Books & copies{% endblock %}
 {% block subheading %}Find a title, check availability, and locate each copy.{% endblock %}
 
 {% block content %}
-
-{% if request.query_params.get('message') %}
-    <div class="alert alert-info">{{ request.query_params.get('message') }}</div>
-{% endif %}
 
 <div class="card panel mb-3">
     <div class="card-body d-flex flex-wrap gap-2 justify-content-between">

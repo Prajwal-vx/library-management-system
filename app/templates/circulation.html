@@ -1,13 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Issue & return{% endblock %}
+{% block meta_description %}Issue, return, and renew WCBT Library book loans.{% endblock %}
 {% block heading %}Issue & return{% endblock %}
 {% block subheading %}Scan a copy barcode to issue it, or process an active loan below.{% endblock %}
 
 {% block content %}
-
-{% if error %}
-    <div class="alert alert-warning">{{ error.replace('+', ' ') }}</div>
-{% endif %}
 
 <div class="card panel mb-4">
     <div class="card-body">

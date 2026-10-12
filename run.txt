@@ -17,3 +17,25 @@ Set-ExecutionPolicy -Scope Process Bypass
 
 # Run uvicorn via python module flag
 python -m uvicorn app.main:app --reload
+
+
+
+
+.\.venv\Scripts\uvicorn.exe app.main:app --reload
+
+
+
+
+$env:SEED_ADMIN_PASSWORD = "admin1234567"
+$env:SEED_LIBRARIAN_PASSWORD = "teacher1234567"
+$env:SEED_MEMBER_PASSWORD = "student1234567"
+.\.venv\Scripts\python.exe scripts\seed.py
+
+
+
+admin@library.local
+admin1234567
+
+
+
+
