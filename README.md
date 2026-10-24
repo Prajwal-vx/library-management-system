@@ -1,4 +1,4 @@
-# Shelfwise — Library Management System
+# WCBT Library Management System
 
 ## Chosen stack
 
@@ -30,7 +30,20 @@ Open <http://127.0.0.1:8000>. Interactive API docs are at `/docs`. Run `pytest` 
 
 ### Initial accounts
 
-The seed script does not create accounts with published or default passwords. To create or rotate demo accounts, set unique values for `SEED_ADMIN_PASSWORD`, `SEED_LIBRARIAN_PASSWORD`, and `SEED_MEMBER_PASSWORD` in the environment before running `scripts/seed.py`. Leave all three unset to seed catalogue data without creating accounts or changing existing passwords. For a real deployment, create administrator credentials through a controlled provisioning process and do not use demo identities.
+The seed script does not create accounts with published or default passwords. From PowerShell, choose three passwords of 10–128 characters and run:
+
+```powershell
+$adminPassword = Read-Host "Admin password" -AsSecureString
+$librarianPassword = Read-Host "Librarian password" -AsSecureString
+$memberPassword = Read-Host "Member password" -AsSecureString
+$env:SEED_ADMIN_PASSWORD = [System.Net.NetworkCredential]::new("", $adminPassword).Password
+$env:SEED_LIBRARIAN_PASSWORD = [System.Net.NetworkCredential]::new("", $librarianPassword).Password
+$env:SEED_MEMBER_PASSWORD = [System.Net.NetworkCredential]::new("", $memberPassword).Password
+.\.venv\Scripts\python.exe scripts\seed.py
+Remove-Item Env:SEED_ADMIN_PASSWORD, Env:SEED_LIBRARIAN_PASSWORD, Env:SEED_MEMBER_PASSWORD
+```
+
+Then sign in at <http://127.0.0.1:8000/login> using `admin@library.local` and the admin password you chose. The other accounts are `librarian@library.local` and `student@library.local`. The seeder can be rerun after setup without duplicating the catalogue. Leave all three variables unset to seed catalogue data without creating accounts or changing existing passwords. For a real deployment, create administrator credentials through a controlled provisioning process and do not use demo identities.
 
 ## Configuration
 
@@ -68,6 +81,38 @@ JWT roles are enforced on APIs and web workflows. Browser session cookies are Ht
 ## API outline
 
 `POST /api/auth/token`, `GET /api/dashboard`, `GET/POST/PATCH/DELETE /api/titles`, `POST /api/copies`, `GET /api/copies/{barcode}/location`, `POST /api/members`, circulation issue/return/renew endpoints, `POST /api/reservations`, `/api/me`, fine payment, softcopy upload/download, and notification generation. Request and response details are in `/docs`.
+
+### Code layout and extension points
+
+```text
+app/
+  config.py       Environment-backed settings
+  database.py     SQLAlchemy engine, metadata, and request-scoped sessions
+  models.py       Persistence models and relationships
+  security.py     Passwords, tokens, roles, revocation, and login throttling
+  services.py     Circulation rules and fine calculation (UI/API independent)
+  main.py         App setup, middleware, and server-rendered web handlers
+  api.py          Versioned API router, request schemas, and API handlers
+  templates/      Jinja pages and shared layout
+  static/         WCBT identity, favicon, and responsive styles
+migrations/       Alembic schema revisions
+tests/            Service and route checks
+```
+
+Keep domain rules in `services.py` (or focused modules under `app/services/` as
+the service grows), request/response validation in API Pydantic schemas, and
+rendering in templates. API endpoints are grouped on a dedicated FastAPI router
+in `api.py`; as the API grows, split this into `app/api/v1/` modules by resource
+while keeping the `/api` route prefix stable for existing clients. Use actionable status codes for API errors, roll back a
+session after failed writes, and show escaped success/error notices to web
+forms after redirects. Settings belong in `.env` or the deployment environment;
+never put deployment secrets in source files. `.env.example` documents the
+supported names without containing credentials.
+
+The browser layout is shared through `templates/base.html`. It owns page
+metadata, navigation, feedback notices, and the current copyright year. Keep
+tables inside responsive wrappers and check new forms at narrow screen widths
+to avoid page-level horizontal scrolling.
 
 ## Small deviations and follow-ups
 
