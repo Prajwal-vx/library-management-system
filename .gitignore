@@ -6,3 +6,13 @@ __pycache__/
 .pytest_cache/
 data/softcopies/*
 !data/softcopies/.gitkeep
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+node_modules/
