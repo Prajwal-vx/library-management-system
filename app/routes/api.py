@@ -3,16 +3,15 @@ from pathlib import Path
 import secrets
 from fastapi import APIRouter, Depends, HTTPException, Request, Form, UploadFile, File, Response
 from fastapi.responses import FileResponse
-from sqlalchemy import select, func, desc
+from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 from app.config import settings
 from app.database import get_db
-from app.models import (Copy, Fine, Loan, LossDamageLog, Member, Notification, Reservation, Shelf, Softcopy, Title, User)
+from app.models import (Copy, Fine, Loan, Member, Notification, Reservation, Softcopy, Title, User)
 from app.security import current_user, roles, verify_password, create_token, hash_password, consume_login_attempt, clear_login_attempts
 from app.services import RuleViolation, issue_copy, return_loan, renew_loan
 from app.schemas.api import TitleIn, CopyIn, MemberIn, CirculationIn, ReturnIn
-from app.routes.common import templates
 
 router = APIRouter()
 

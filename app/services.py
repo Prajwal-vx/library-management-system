@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from app.config import settings
-from app.models import (Copy, Fine, Loan, Member, Notification, Reservation, Title, User,
+from app.models import (Copy, Fine, Loan, Member, Notification, Reservation, User,
                         LossDamageLog)
 
 class RuleViolation(Exception): pass

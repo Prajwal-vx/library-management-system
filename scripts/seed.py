@@ -1,8 +1,7 @@
 import os
-from datetime import date, timedelta
 from sqlalchemy import select
 from app.database import Base, engine, SessionLocal
-from app.models import User, Member, Shelf, Title, Copy, Loan
+from app.models import User, Member, Shelf, Title, Copy
 from app.security import hash_password
 
 Base.metadata.create_all(engine)
